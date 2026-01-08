@@ -21,11 +21,22 @@ signed main() {
 
     int total = 0;
     for (int i = 0; i < N; i++) {
+        total %= M;
         int s = str[i] - 'a' + 1;
-        int tmp = (s * pow(R, i));
-        int t = (tmp % M);
-        total = (total + t) % M;
+        int p = 1;
+
+        int cnt = 0;
+        while (true) {
+            if (cnt == i) {
+                break;
+            }
+            p *= R;
+            p %= M;
+            cnt++;
+        }
+        int pp = (s * p) % M;
+        total += pp;
     }
-    cout << total;
+    cout << total % M;
 
 }
