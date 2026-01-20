@@ -16,7 +16,8 @@ bool isRange(int x, int y) {
 int dx[4] = {1, -1, 0, 0,};
 int dy[4] = {0, 0, 1, -1};
 
-const int INF = 1e9+10;
+// const int INF = 1e9+10;
+const int INF = 0x3f3f3f3f;
 
 int main() {
   ios_base::sync_with_stdio(0);
@@ -27,12 +28,13 @@ int main() {
 
   int st = 0, ed = 0;
   for (int i = 0; i < N; i++) {
-    memset(ans[i], INF, sizeof(ans[i]));
+    memset(ans[i], 0x3f, sizeof(ans[i]));
 
     for (int j = 0; j < M; j++) {
       int x;
       cin >> x;
       arr[i][j] = x;
+      // ans[i][j] = INF;
 
       // 시작점
       if (x == 2) {
@@ -76,7 +78,7 @@ int main() {
 
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < M; j++) {
-      if (ans[i][j] == 168430090) {
+      if (ans[i][j] == INF) {
         if (arr[i][j] == 0) {
           cout << 0 << " ";
         } else {
