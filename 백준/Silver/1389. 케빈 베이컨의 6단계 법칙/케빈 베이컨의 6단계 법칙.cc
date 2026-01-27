@@ -1,11 +1,14 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+
 using namespace std;
 
 const int UNSEEN = 0x7fffffff;
 
-int arr[101][101];
+vector<pair<int, int>> adj[101];
+vector<bool> visited;
+vector<int> dist;
 
 int main() {
   ios_base::sync_with_stdio(0);
@@ -15,44 +18,49 @@ int main() {
   int N, M;
   cin >> N >> M;
 
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      if (i == j) {
-        arr[i][j] = 0;
-      } else {
-        arr[i][j] = UNSEEN;
-      }
-    }
-  }
-
   for (int i = 0; i < M; i++) {
     int x, y;
     cin >> x >> y;
-    arr[x][y] = arr[y][x] = 1;
-  }
 
-  for (int j = 1; j <= N; j++) {
-    for (int i = 1; i <= N; i++) {
-      if (i == j) continue;
-      if (arr[i][j] == UNSEEN) continue;
-
-      for (int k = 1; k <= N; k++) {
-        if (j == k) continue;
-        if (arr[j][k] == UNSEEN) continue;
-        arr[i][k] = min(arr[i][k], arr[i][j] + arr[j][k]);
-      }
-    }
+    adj[x].push_back({1, y});
+    adj[y].push_back({1, x});
   }
 
   priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> Q;
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> result;
 
   for (int i = 1; i <= N; i++) {
-    int tmp = 0;
-    for (int j = 1; j <= N; j++) {
-      tmp += arr[i][j];
-    }
-    Q.push({tmp, i});
-  }
+    visited.assign(N + 1, false);
+    dist.assign(N+1, UNSEEN);
 
-  cout << Q.top().second;
+    // cout << "HI\n";
+
+    dist[i] = 0;
+    Q.push({0, i});
+
+    while (!Q.empty()) {
+      pair<int, int> top_v = Q.top();
+      Q.pop();
+      if (visited[top_v.second]) continue;
+      if (dist[top_v.second] != top_v.first) continue;
+      visited[top_v.second] = true;
+
+      for (auto& fringe : adj[top_v.second]) {
+        if (visited[fringe.second]) continue;
+        if (dist[fringe.second] > top_v.first + fringe.first) {
+          dist[fringe.second] = top_v.first + fringe.first;
+          Q.push({dist[fringe.second], fringe.second});
+          // cout << dist[fringe.second] << "," << fringe.second << "\n";
+        }
+      }
+    }
+
+    int total = 0;
+    for (int i = 1; i <= N; i++) {
+      total += dist[i];
+    }
+    result.push({total, i});
+    // cout << total << " " << i << "\n";
+  }
+  cout << result.top().second;
 }
