@@ -1,23 +1,33 @@
 #include <iostream>
-#include <set>
-#include <map>
 #include <vector>
+
 using namespace std;
 
-vector<int> adj[51];
-vector<int> arr[51];
+int arr[51];
+vector<int> V[51];
 
-set<int> truth;
-bool visited[51];
-
-void dfs(int x) {
-    truth.insert(x);
-    visited[x] = true;
-
-    for (auto a : adj[x]) {
-        if (visited[a]) continue;
-        dfs(a);
+int findPar(int v) {
+    if (arr[v] < 0) {
+        return v;
     }
+    return findPar(arr[v]);
+}
+
+void uni(int x, int y) {
+    int par_x = findPar(x);
+    int par_y = findPar(y);
+
+    if (par_x == par_y) return;
+
+    if (arr[par_x] > arr[par_y]) {
+        swap(par_x, par_y);
+    }
+
+    if (arr[par_x] == arr[par_y]) {
+        arr[par_x]--;
+    }
+
+    arr[par_y] = par_x;
 }
 
 int main() {
@@ -28,21 +38,25 @@ int main() {
     int N, M;
     cin >> N >> M;
 
+    for (int i = 0; i <= N; i++) {
+        arr[i] = -1;
+    }
+
     int x;
     cin >> x;
 
-    int st;
-    
+    int par;
     if (x == 0) {
-        st = 0;
-    } else {
+        par = 0;
+    }  else {
         int y;
         cin >> y;
-        st = y;
+
+        par = y;
 
         for (int i = 1; i < x; i++) {
             cin >> y;
-            adj[st].push_back(y);
+            uni(par, y);
         }
     }
 
@@ -51,43 +65,38 @@ int main() {
         cin >> a;
 
         if (a == 1) {
-            int b;
+            int b; 
             cin >> b;
-            arr[i].push_back(b);
+            V[i].push_back(b);
         } else {
             int prev;
             cin >> prev;
-            arr[i].push_back(prev);
+            V[i].push_back(prev);
 
             for (int j = 1; j < a; j++) {
                 int cur;
                 cin >> cur;
-                arr[i].push_back(cur);
-                adj[prev].push_back(cur);
-                adj[cur].push_back(prev);
-                prev = cur;
+                V[i].push_back(cur);
+                uni(prev, cur);
             }
         }
     }
 
-    dfs(st);
-    // cout << "\n";
-
-    // for (auto t : truth) {
-    //     cout << t << " ";
-    // }
-    // cout << "\n";
-
     int ans = 0;
     for (int i = 0; i < M; i++) {
         bool pass = true;
-        for (auto a : arr[i]) {
-            if (truth.find(a) != truth.end()) {
+        for (auto a : V[i]) {
+            if (findPar(a) == findPar(par)) {
                 pass = false;
                 break;
             }
         }
         if (pass) ans++;
     }
+
+    // for (int i = 0; i <= N; i++) {
+    //     cout << arr[i] << " ";
+    // }
+    // cout << "\n";
     cout << ans;
 }
