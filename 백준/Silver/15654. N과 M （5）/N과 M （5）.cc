@@ -7,19 +7,28 @@ using namespace std;
 
 int N, M;
 
-vector<int> arr;
+int num[9];
+int arr[9];
+bool check[9];
 
-void dfs(string str, int cnt, set<int> s) {
-    if (cnt == M) {
-        cout << str << "\n";
+void dfs(int arr_last, int checked) {
+    if (checked == M) {
+        for (int i = 0; i < M; i++) {
+            cout << arr[i] << " ";
+        }
+        cout << "\n";
+    
         return;
     }
 
-    for (int nxt = 0; nxt < N; nxt++) {
-        if (s.find(nxt) != s.end()) continue;
-        set<int> ss = s;
-        ss.insert(nxt);
-        dfs(str + " " + to_string(arr[nxt]), cnt + 1, ss);
+    for (int i = 0; i < N; i++) {
+        if (!check[i]) {
+            arr[arr_last] = num[i];
+            // cout << "arr[" << arr_last << "] = num[" << i << "]\n"; 
+            check[i] = true;
+            dfs(arr_last + 1, checked + 1);
+            check[i] = false;
+        }
     }
 }
 
@@ -33,19 +42,26 @@ int main() {
     for (int i = 0; i < N; i++) {
         int x;
         cin >> x;
-        arr.push_back(x);
+        num[i] = x;
     }
 
-    sort(arr.begin(), arr.end());
+    sort(num, num + N);
 
-    // for (auto a : arr) {
-    //     cout << a << " ";
+    // for (auto ele : num) {
+    //     cout << ele << " ";
     // }
-    // cout << "==\n";
+    // cout << "--\n";
 
     for (int i = 0; i < N; i++) {
-        set<int> s;
-        s.insert(i);
-        dfs(to_string(arr[i]), 1, s);
+        arr[0] = num[i];
+        check[i] = true;
+        dfs(1, 1);
+        check[i] = false;
+
+        // cout << "bye\n";
+        // for (auto ele : check) {
+        //     cout << ele << " ";
+        // }
+        // cout << "==\n";
     }
 }
